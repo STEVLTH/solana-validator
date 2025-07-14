@@ -55,15 +55,11 @@ PREV_ACTIVE_IDENTITY_PUBKEY=""
 
 # Colors and logging functions
 BLUE="\033[1;34m"; GREEN="\033[1;32m"; YELLOW="\033[1;33m"; RED="\033[0;31m"; RESET="\033[0m"
-# log()   { echo -e "[$(date -u +"%F %T")] ${BLUE}[INFO]${RESET} $1"; echo "[$(date -u +"%F %T")] [INFO] $1" >> "$LOG_PATH"; }
-# warn()  { echo -e "[$(date -u +"%F %T")] ${YELLOW}[WARN]${RESET} $1"; echo "[$(date -u +"%F %T")] [WARN] $1" >> "$LOG_PATH"; }
-# error() { echo -e "[$(date -u +"%F %T")] ${RED}[ERROR]${RESET} $1"; echo "[$(date -u +"%F %T")] [ERROR] $1" >> "$LOG_PATH"; exit 1; }
-# ok()    { echo -e "[$(date -u +"%F %T")] ${GREEN}[OK]${RESET} $1"; echo "[$(date -u +"%F %T")] [OK] $1" >> "$LOG_PATH"; }
 
 log()   { echo -e "[$(date -u +"%F %T")] ${BLUE}[INFO]${RESET} $1" >> "$LOG_PATH"; }
 warn()  { echo -e "[$(date -u +"%F %T")] ${YELLOW}[WARN]${RESET} $1" >> "$LOG_PATH"; }
 error() { echo -e "[$(date -u +"%F %T")] ${RED}[ERROR]${RESET} $1" >> "$LOG_PATH"; exit 1; }
-ok()    { echo -e "[$(date -u +"%F %T")] ${GREEN}[OK]${RESET} $1" >> "$LOG_PATH"; }
+ok()    { echo -e "[$(date -u +"%F %T")] ${GREEN}[OK..]${RESET} $1" >> "$LOG_PATH"; }
 
 
 
@@ -89,7 +85,6 @@ fi
 
 if [[ -z $LOG_PATH ]]; then
     error "LOG_PATH is not set."
-    # log "Please set LOG_PATH variable in the script."
 fi
 
 
@@ -133,7 +128,7 @@ check_internet_connection() {
             return 0
         fi
 
-        log "WARN: Attempt #$((i+1))/$attempts: Internet connection unavailable. Retry in $interval seconds..."
+        warn "Attempt #$((i+1))/$attempts: Internet connection unavailable. Retry in $interval seconds..."
         sleep $interval
     done
 
@@ -165,7 +160,7 @@ check_delinquency() {
         if [[ $i -gt 1 ]]; then
             # Check local RPC before each delinquency check
             if ! check_local_rpc; then
-                log "WARN: Skipping delinquency check."
+                warn "Skipping delinquency check."
 
                 return 1
             fi
