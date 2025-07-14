@@ -284,7 +284,7 @@ echo ""; echo "" >> "$LOG_PATH"
 
 
 while true; do
-    SLEEP_SECONDS="$(calculate_sleep_interval "$CHECK_INTERVAL")"
+    SLEEP_SECONDS=$CHECK_INTERVAL
     
     if ! systemctl is-active --quiet solana; then
         warn "Solana validator is not running."
@@ -337,10 +337,10 @@ while true; do
             fi
 
             PREV_ACTIVE_IDENTITY_PUBKEY=$ACTIVE_IDENTITY_PUBKEY
-            log "Waiting $SLEEP_SECONDS seconds before next run..."
+            log "Waiting $(calculate_sleep_interval "$SLEEP_SECONDS") seconds before next run..."
             echo ""; echo "" >> "$LOG_PATH"
         fi
     fi
 
-    sleep $SLEEP_SECONDS
+    sleep "$(calculate_sleep_interval "$SLEEP_SECONDS")"
 done
