@@ -137,7 +137,7 @@ check_local_rpc() {
         RPC_PORT="$(systemctl status solana | grep -o -- "--rpc-port [^ ]*" | awk '{print $2}')"
         RPC_URL="http://localhost:$RPC_PORT"
         log "Local RPC is running."
-        
+
         return 0
     else
         warn "Local RPC is not responding. Validator startup is not complete."
@@ -151,7 +151,7 @@ check_delinquency() {
     local attempts=5
     local interval=2
     local delinquent_status
-        
+
     for ((i=1; i<=attempts; i++)); do
         if [[ $i -gt 1 ]]; then
             # Check local RPC before each delinquency check
@@ -200,13 +200,13 @@ check_catchup() {
 
 monitor_identity() {
     local message=""
-    
+
     if [[ "$ACTIVE_IDENTITY_PUBKEY" == "$STAKED_IDENTITY_PUBKEY" && "$PREV_ACTIVE_IDENTITY_PUBKEY" != "" ]]; then
         DELINQUENT_SLOT_DISTANCE=$DEFAULT_DELINQUENT_SLOT_DISTANCE
         log "Delinquent Slot Distance: $DELINQUENT_SLOT_DISTANCE"
 
         if [[ "$PREV_ACTIVE_IDENTITY_PUBKEY" != "$STAKED_IDENTITY_PUBKEY" ]]; then
-            
+
             SLEEP_SECONDS=$SWITCH_TIMEOUT
             message="Switched identity from UNSTAKED to STAKED."
             warn "$message"
@@ -218,7 +218,7 @@ monitor_identity() {
         DELINQUENT_SLOT_DISTANCE=$(echo "$DEFAULT_DELINQUENT_SLOT_DISTANCE*2" | bc)
         log "Delinquent Slot Distance: $DELINQUENT_SLOT_DISTANCE"
 
-        if [[ "$PREV_ACTIVE_IDENTITY_PUBKEY" == "$STAKED_IDENTITY_PUBKEY" ]]; then        
+        if [[ "$PREV_ACTIVE_IDENTITY_PUBKEY" == "$STAKED_IDENTITY_PUBKEY" ]]; then
             SLEEP_SECONDS=$(echo "$SWITCH_TIMEOUT*2" | bc)
             message="Switched identity from STAKED to UNSTAKED."
             warn "$message"
@@ -234,7 +234,7 @@ monitor_identity() {
 
 switch_identity() {
     local identity
-    
+
     if [[ "$ACTIVE_IDENTITY_PUBKEY" == "$STAKED_IDENTITY_PUBKEY" ]]; then
         identity="$UNSTAKED_IDENTITY_KEYPAIR"
         ok "$($SOLANA_PATH/agave-validator --ledger $LEDGER_PATH authorized-voter remove-all)"
@@ -247,7 +247,7 @@ switch_identity() {
         else
             warn "Tower file not found: $TOWER_PATH"
         fi
-        
+
         ok "$($SOLANA_PATH/agave-validator --ledger $LEDGER_PATH authorized-voter add <<< $identity | grep Add)"
     fi
 
@@ -281,7 +281,7 @@ echo ""; echo "" >> "$LOG_PATH"
 
 while true; do
     SLEEP_SECONDS=$CHECK_INTERVAL
-    
+
     if ! systemctl is-active --quiet solana; then
         warn "Solana validator is not running."
     else
@@ -301,9 +301,9 @@ while true; do
             log "Staked Identity: $STAKED_IDENTITY_PUBKEY"
             log "Active Identity: $ACTIVE_IDENTITY_PUBKEY"
             log "Prev   Identity: $PREV_ACTIVE_IDENTITY_PUBKEY"
-            
+
             if monitor_identity; then
-                if check_internet_connection; then 
+                if check_internet_connection; then
                     log "Internet connection is available."
 
                     if check_delinquency; then
@@ -320,16 +320,15 @@ while true; do
                             fi
                         fi
                     fi
-                else 
+                else
                     warn "No internet connection."
 
-                    if [[ $ACTIVE_IDENTITY_PUBKEY == $STAKED_IDENTITY_PUBKEY ]]; then 
+                    if [[ $ACTIVE_IDENTITY_PUBKEY == $STAKED_IDENTITY_PUBKEY ]]; then
                         switch_identity
                     else
                         log "Unstaked identity is active, do nothing."
                     fi
                 fi
-
             fi
 
             PREV_ACTIVE_IDENTITY_PUBKEY=$ACTIVE_IDENTITY_PUBKEY
