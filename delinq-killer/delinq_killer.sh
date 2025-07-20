@@ -329,13 +329,18 @@ while true; do
                         log "Unstaked identity is active, do nothing."
                     fi
                 fi
+
             fi
 
             PREV_ACTIVE_IDENTITY_PUBKEY=$ACTIVE_IDENTITY_PUBKEY
-            log "Waiting $(calculate_sleep_interval "$SLEEP_SECONDS") seconds before next run..."
-            echo ""; echo "" >> "$LOG_PATH"
         fi
     fi
 
-    sleep "$(calculate_sleep_interval "$SLEEP_SECONDS")"
+    if [[ $SLEEP_SECONDS -eq $CHECK_INTERVAL ]]; then
+        SLEEP_SECONDS=$(calculate_sleep_interval "$SLEEP_SECONDS")
+    fi
+
+    log "Waiting $SLEEP_SECONDS seconds before next run..."
+    sleep $SLEEP_SECONDS
+    echo ""; echo "" >> "$LOG_PATH"
 done
