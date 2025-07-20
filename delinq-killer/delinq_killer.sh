@@ -186,7 +186,7 @@ check_delinquency() {
 
 
 check_catchup() {
-    if [ "$(timeout --foreground 10 $SOLANA_PATH/solana catchup --our-localhost > /dev/null && echo $?)" == "0" ]; then
+    if [ "$(timeout --foreground 5 $SOLANA_PATH/solana catchup --our-localhost > /dev/null && echo $?)" == "0" ]; then
         log "$ACTIVE_IDENTITY_PUBKEY is caught up."
 
         return 0
