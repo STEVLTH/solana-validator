@@ -7,7 +7,7 @@
 
 # File: delinq_killer.sh
 # Version: 1.1
-# Date: 2025-13-07
+# Date: 2025-20-07
 # Author: STEALTH (93Q99nhdKjuSe6WNXgMBbC3s8QVQEAoHKt91PNRkUkMn)
 # GitHub: https://github.com/STEVLTH/solana-validator/tree/main/delinq-killer
 # Tweeter/X: @stevlth_sol
@@ -114,19 +114,15 @@ calculate_sleep_interval() {
 
 check_internet_connection() {
     local servers=("google.com" "cloudflare.com" "github.com")
-    local attempts=5
+    local attempts=6
     local interval=2
 
     for ((i=0; i<attempts; i++)); do
         for server in "${servers[@]}"; do
-            if ping -c 1 $server &> /dev/null; then
+            if ping -W 1 -c 1 $server &> /dev/null; then
                 return 0
             fi
         done
-
-        if curl -s --head http://www.google.com | grep "200 OK" > /dev/null; then
-            return 0
-        fi
 
         warn "Attempt #$((i+1))/$attempts: Internet connection unavailable. Retry in $interval seconds..."
         sleep $interval
