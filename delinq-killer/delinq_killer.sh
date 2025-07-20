@@ -208,7 +208,7 @@ monitor_identity() {
         if [[ "$PREV_ACTIVE_IDENTITY_PUBKEY" != "$STAKED_IDENTITY_PUBKEY" ]]; then
             
             SLEEP_SECONDS=$SWITCH_TIMEOUT
-            message="switched identity from UNSTAKED to STAKED."
+            message="Switched identity from UNSTAKED to STAKED."
             warn "$message"
             telegram_message "\u26A0 #$VALIDATOR_NAME ($(hostname -I | awk '{print $1}'))\n\n$message"
 
@@ -220,7 +220,7 @@ monitor_identity() {
 
         if [[ "$PREV_ACTIVE_IDENTITY_PUBKEY" == "$STAKED_IDENTITY_PUBKEY" ]]; then        
             SLEEP_SECONDS=$(echo "$SWITCH_TIMEOUT*2" | bc)
-            message="switched identity from STAKED to UNSTAKED."
+            message="Switched identity from STAKED to UNSTAKED."
             warn "$message"
             telegram_message "\u26A0 #$VALIDATOR_NAME ($(hostname -I | awk '{print $1}'))\n\n$message"
 
@@ -298,12 +298,11 @@ while true; do
 
         if check_local_rpc; then
             ACTIVE_IDENTITY_PUBKEY="$($SOLANA_PATH/agave-validator --ledger $LEDGER_PATH contact-info | grep Identity | awk '{print $2}')"
-
+            log "Staked Identity: $STAKED_IDENTITY_PUBKEY"
+            log "Active Identity: $ACTIVE_IDENTITY_PUBKEY"
+            log "Prev   Identity: $PREV_ACTIVE_IDENTITY_PUBKEY"
+            
             if monitor_identity; then
-                log "Staked Identity: $STAKED_IDENTITY_PUBKEY"
-                log "Active Identity: $ACTIVE_IDENTITY_PUBKEY"
-                log "Prev   Identity: $PREV_ACTIVE_IDENTITY_PUBKEY"
-
                 if check_internet_connection; then 
                     log "Internet connection is available."
 
